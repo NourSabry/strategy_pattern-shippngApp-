@@ -1,10 +1,10 @@
 import 'package:shipping_app/cost_ship_interface.dart';
 
-import 'order.dart';
+import '../order/order.dart';
 
 class InStorePickupStrategy implements IShippingCostsStrategy {
   @override
-  String? label = "in store products";
+  String label = "in store products";
 
   @override
   double calculate(Order order) {

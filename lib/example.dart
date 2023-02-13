@@ -1,57 +1,123 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:shipping_app/Order.dart';
-import 'package:shipping_app/cost_ship_interface.dart';
-import 'package:shipping_app/in_store_package.dart';
-import 'package:shipping_app/order_item.dart';
-import 'package:shipping_app/parcel_shipping_terminal.dart';
-import 'package:shipping_app/prioprity_shipement.dart';
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
 
-class StrategyExampleState extends StatefulWidget {
-  const StrategyExampleState({super.key});
+import 'package:flutter/material.dart';
+import 'package:shipping_app/cost_ship_interface.dart';
+import 'package:shipping_app/layout_constant.dart';
+import 'package:shipping_app/order/order.dart';
+import 'package:shipping_app/order/order_item.dart';
+import 'package:shipping_app/order/order_summary.dart';
+import 'package:shipping_app/shipping/in_store_package.dart';
+import 'package:shipping_app/shipping/parcel_shipping_terminal.dart';
+import 'package:shipping_app/shipping/prioprity_shipement.dart';
+import 'package:shipping_app/shipping/sipping_options.dart';
+import 'package:shipping_app/widgets/order_buttons.dart';
+import 'package:shipping_app/widgets/order_items_table.dart';
+
+class StrategyExample extends StatefulWidget {
+  const StrategyExample();
 
   @override
-  State<StrategyExampleState> createState() => _StrategyExampleStateState();
+  _StrategyExampleState createState() => _StrategyExampleState();
 }
 
-class _StrategyExampleStateState extends State<StrategyExampleState> {
+class _StrategyExampleState extends State<StrategyExample> {
   final List<IShippingCostsStrategy> _shippingCostsStrategyList = [
     InStorePickupStrategy(),
-    PriorityShippingStrategy(),
     ParcelTerminalShippingStrategy(),
+    PriorityShippingStrategy(),
   ];
-  int _selectedIndex = 0;
-  Order? _order;
+  int _selectedStrategyIndex = 0;
+  Order _order = Order();
 
-  void addOrder() {
+  void _addToOrder() {
     setState(() {
-      _order!.addOrderItem(
-        OrderItem.random(),
-      );
+      _order.addOrderItem(OrderItem.random());
     });
   }
 
-  void clearOrder() {
+  void _clearOrder() {
     setState(() {
       _order = Order();
     });
   }
 
-  void setSelectedStrategyIndex(int index) {
+  void _setSelectedStrategyIndex(int? index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedStrategyIndex = index!;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    //Controls how Scrollable widgets behave in a subtree. The scroll configuration
-    // determines the ScrollPhysics and viewport decorations used by descendants of child.
-    return ScrollConfiguration(
-      behavior: ScrollBehavior(),
-      child: SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Strategy Pattern example"),
+        elevation: 2,
+        backgroundColor: Colors.grey,
         
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+
+          
+        ),
+      ),
+      body: ScrollConfiguration(
+        behavior: const ScrollBehavior(),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: LayoutConstants.paddingL,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              OrderButtons(
+                onAdd: _addToOrder,
+                onClear: _clearOrder,
+              ),
+              const SizedBox(height: LayoutConstants.spaceM),
+              Stack(
+                children: <Widget>[
+                  AnimatedOpacity(
+                    duration: const Duration(milliseconds: 500),
+                    opacity: _order.items.isEmpty ? 1.0 : 0.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Your order is empty',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ],
+                    ),
+                  ),
+                  AnimatedOpacity(
+                    duration: const Duration(milliseconds: 500),
+                    opacity: _order.items.isEmpty ? 0.0 : 1.0,
+                    child: Column(
+                      children: <Widget>[
+                        OrderItemsTable(
+                          orderItems: _order.items,
+                        ),
+                        const SizedBox(height: LayoutConstants.spaceM),
+                        ShippingOptions(
+                          selectedIndex: _selectedStrategyIndex,
+                          shippingOptions: _shippingCostsStrategyList,
+                          onChanged: _setSelectedStrategyIndex,
+                        ),
+                        OrderSummary(
+                          shippingCostsStrategy: _shippingCostsStrategyList[
+                              _selectedStrategyIndex],
+                          order: _order,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

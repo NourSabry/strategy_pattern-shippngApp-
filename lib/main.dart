@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shipping_app/example.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,10 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
- 
         primarySwatch: Colors.grey,
       ),
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const StrategyExample  (),
     );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:shipping_app/cost_ship_interface.dart';
-import 'package:shipping_app/order.dart';
+import 'package:shipping_app/order/order.dart';
 
 class PriorityShippingStrategy implements IShippingCostsStrategy {
   @override
-  String? label = "priority shipping";
+  String label = "priority shipping";
 
   @override
   double calculate(Order order) {

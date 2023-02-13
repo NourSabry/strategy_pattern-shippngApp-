@@ -1,12 +1,12 @@
 import 'package:shipping_app/cost_ship_interface.dart';
-import 'package:shipping_app/order.dart';
-import 'package:shipping_app/order_item.dart';
-import 'package:shipping_app/package_size.dart';
+import 'package:shipping_app/order/order.dart';
+import 'package:shipping_app/order/order_item.dart';
+ import 'package:shipping_app/package_size.dart';
 import 'dart:core';
 
 class ParcelTerminalShippingStrategy implements IShippingCostsStrategy {
   @override
-  String? label = "parcel shipping terminal";
+  String label = "parcel shipping terminal";
 
 //each order item is sent separately and the shipping cost depends on the parcel size.
 // The final shipping price is calculated by adding up the separate shipping cost of each order item.
@@ -14,7 +14,7 @@ class ParcelTerminalShippingStrategy implements IShippingCostsStrategy {
   double calculate(Order order) {
     //fold : Reduces a collection to a single value by iteratively
     //combining each element of the collection with an existing value
-    return order.items!
+    return order.items
         .fold<double>(0.0, (sum, item) => sum + _getShippingPrice(item));
   }
 
